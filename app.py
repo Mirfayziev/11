@@ -60,11 +60,13 @@ with app.app_context():
 
 
 # ============================
-#       AUTH (Login)
+#       AUTH (Login / Register)
 # ============================
 
 @app.route("/")
 def home():
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
     return redirect(url_for("login"))
 
 
@@ -83,6 +85,43 @@ def login():
         return redirect(url_for("dashboard"))
 
     return render_template("login.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    # Agar allaqachon kirgan bo'lsa, dashboardga yuboramiz
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        full_name = request.form["full_name"].strip()
+        email = request.form["email"].strip()
+        password = request.form["password"].strip()
+        confirm = request.form["confirm_password"].strip()
+
+        if password != confirm:
+            flash("Parollar mos emas!", "danger")
+            return render_template("register.html")
+
+        if User.query.filter_by(username=username).first():
+            flash("Bu username band!", "danger")
+            return render_template("register.html")
+
+        u = User(
+            username=username,
+            full_name=full_name,
+            email=email,
+            role="user"
+        )
+        u.set_password(password)
+        db.session.add(u)
+        db.session.commit()
+
+        flash("Muvaffaqiyatli ro'yxatdan o'tdingiz, endi login qiling.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 
 @app.route("/logout")
