@@ -19,5 +19,3 @@ python-telegram-bot==13.15
 # Production Server
 gunicorn==21.2.0
 
-# PostgreSQL (Render.com)
-psycopg2-binary==2.9.9
