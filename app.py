@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     full_name = db.Column(db.String(200))
     email = db.Column(db.String(200))
+    telegram_username = db.Column(db.String(120))   # 🔥 YANGI QO‘SHILDI
     password_hash = db.Column(db.String(300))
     role = db.Column(db.String(20), default="user")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -50,10 +51,6 @@ class Task(db.Model):
 def load_user(uid):
     return User.query.get(int(uid))
 
-
-# ===========================================
-#   DATABASE YARATISH — RENDERDA HAM ISHLAYDI
-# ===========================================
 
 with app.app_context():
     db.create_all()
@@ -89,14 +86,11 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    # Agar allaqachon kirgan bo'lsa, dashboardga yuboramiz
-    if current_user.is_authenticated:
-        return redirect(url_for("dashboard"))
-
     if request.method == "POST":
-        username = request.form["username"].strip()
         full_name = request.form["full_name"].strip()
+        username = request.form["username"].strip()
         email = request.form["email"].strip()
+        telegram_username = request.form.get("telegram_username", "").strip()
         password = request.form["password"].strip()
         confirm = request.form["confirm_password"].strip()
 
@@ -112,19 +106,22 @@ def register():
             username=username,
             full_name=full_name,
             email=email,
+            telegram_username=telegram_username,
             role="user"
         )
         u.set_password(password)
+
         db.session.add(u)
         db.session.commit()
 
-        flash("Muvaffaqiyatli ro'yxatdan o'tdingiz, endi login qiling.", "success")
+        flash("Muvaffaqiyatli ro'yxatdan o'tdingiz. Endi login qiling!", "success")
         return redirect(url_for("login"))
 
     return render_template("register.html")
 
 
 @app.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
@@ -154,41 +151,6 @@ def admin_users():
     return render_template("admin/users.html", users=users)
 
 
-@app.route("/admin/users/new", methods=["GET", "POST"])
-@login_required
-def admin_user_new():
-    if current_user.role != "admin":
-        return redirect(url_for("dashboard"))
-
-    if request.method == "POST":
-        u = User(
-            username=request.form["username"],
-            full_name=request.form["full_name"],
-            email=request.form["email"],
-            role=request.form["role"],
-        )
-        u.set_password(request.form["password"])
-        db.session.add(u)
-        db.session.commit()
-        return redirect(url_for("admin_users"))
-
-    return render_template("admin/user_form.html")
-
-
-@app.route("/admin/users/<int:user_id>/delete")
-@login_required
-def admin_user_delete(user_id):
-    if current_user.role != "admin":
-        return redirect(url_for("dashboard"))
-
-    u = User.query.get(user_id)
-    if u:
-        db.session.delete(u)
-        db.session.commit()
-
-    return redirect(url_for("admin_users"))
-
-
 # ============================
 #       TASKS
 # ============================
@@ -215,10 +177,6 @@ def tasks_new():
 
     return render_template("tasks/form.html")
 
-
-# ============================
-#       RUN
-# ============================
 
 if __name__ == "__main__":
     app.run(debug=True)
