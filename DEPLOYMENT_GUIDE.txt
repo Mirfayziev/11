@@ -1,0 +1,305 @@
+═══════════════════════════════════════════════════════════════════
+   🚀 RENDER.COM - TO'LIQ DEPLOYMENT GUIDE
+   100% Tayyor, Qadam-Baqadam Ko'rsatma
+═══════════════════════════════════════════════════════════════════
+
+USHBU PACKAGE ICHIDA:
+  ✅ Barcha 14 ta modul tayyor
+  ✅ User management + Admin panel
+  ✅ Telegram bot integratsiya
+  ✅ Real chat system
+  ✅ Professional dashboard
+  ✅ Role-based access
+  ✅ Barcha 7 ta muammo tuzatilgan
+  ✅ Render.com uchun konfiguratsiya
+
+═══════════════════════════════════════════════════════════════════
+QADAM 1: GITHUB'GA YUKLASH (5 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. GitHub'da yangi repository yarating:
+   - Repository name: af-imperiya
+   - Public yoki Private
+   - README qo'shmasdan
+
+2. Terminal'da:
+   cd af_imperiya
+   git init
+   git add .
+   git commit -m "Initial commit - 100% ready"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/af-imperiya.git
+   git push -u origin main
+
+═══════════════════════════════════════════════════════════════════
+QADAM 2: RENDER.COM ACCOUNT (2 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. https://render.com ga kiring
+2. GitHub bilan Sign up qiling
+3. GitHub repositories'ga ruxsat bering
+
+═══════════════════════════════════════════════════════════════════
+QADAM 3: POSTGRESQL DATABASE (3 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. Render Dashboard → New → PostgreSQL
+
+2. Settings:
+   - Name: af-imperiya-db
+   - Database: af_imperiya
+   - User: af_imperiya_user
+   - Region: Frankfurt (Germany)
+   - PostgreSQL Version: 15
+
+3. Plan:
+   - Free: 90 kun, 1GB storage
+   yoki
+   - Starter: $7/month, 10GB storage
+
+4. Create Database
+
+5. Database URL ni copy qiling (kerak bo'ladi)
+
+═══════════════════════════════════════════════════════════════════
+QADAM 4: WEB SERVICE YARATISH (5 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. Render Dashboard → New → Web Service
+
+2. Connect Repository:
+   - GitHub'dagi af-imperiya repository'ni tanlang
+
+3. Settings:
+   - Name: af-imperiya
+   - Region: Frankfurt (Database bilan BIR XIL!)
+   - Branch: main
+   - Root Directory: (bo'sh)
+   - Runtime: Python 3
+   - Build Command: pip install -r requirements.txt
+   - Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+
+4. Plan:
+   - Free: $0/month (15 daqiqa uyqu)
+   yoki
+   - Starter: $7/month (24/7)
+
+═══════════════════════════════════════════════════════════════════
+QADAM 5: ENVIRONMENT VARIABLES (3 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+Web Service → Settings → Environment:
+
+Qo'shing:
+
+1. DATABASE_URL
+   Value: [PostgreSQL Internal Database URL]
+   (PostgreSQL dashboard'dan copy qiling)
+
+2. SECRET_KEY
+   Value: [random string, masalan: aB3xY7kP9mN2qR5wL8dF1j]
+   (https://randomkeygen.com/ dan oling)
+
+3. FLASK_ENV
+   Value: production
+
+4. TELEGRAM_BOT_TOKEN (optional, keyin qo'shish mumkin)
+   Value: [BotFather'dan olgan token]
+
+Save Changes!
+
+═══════════════════════════════════════════════════════════════════
+QADAM 6: DEPLOY! (10 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. Web Service → Manual Deploy → Deploy latest commit
+
+2. Logs'ni kuzating:
+   - Building...
+   - Installing dependencies...
+   - Starting server...
+   - Live! ✅
+
+3. URL oching:
+   https://af-imperiya.onrender.com
+   (yoki sizning unique URL)
+
+4. Birinchi kirishda 30-60 soniya kutib turing
+   (Database tables yaratiladi)
+
+═══════════════════════════════════════════════════════════════════
+QADAM 7: BIRINCHI TEST (2 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. Browser'da ochildi:
+   https://af-imperiya.onrender.com
+
+2. Login:
+   - Username: admin
+   - Password: admin123
+
+3. Parolni o'zgartiring!
+   (Majburiy - xavfsizlik uchun)
+
+4. Dashboard'ga o'ting ✅
+
+═══════════════════════════════════════════════════════════════════
+QADAM 8: TELEGRAM BOT (Optional, 5 daqiqa)
+═══════════════════════════════════════════════════════════════════
+
+1. @BotFather'ga kiring:
+   /newbot
+
+2. Bot nomini kiriting:
+   AF IMPERIYA Bot
+
+3. Bot username:
+   af_imperiya_bot
+
+4. Token olasiz:
+   1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
+
+5. Render.com'da Environment Variable qo'shing:
+   TELEGRAM_BOT_TOKEN=1234567890:ABC...
+
+6. Redeploy:
+   Manual Deploy → Deploy latest commit
+
+7. Bot'ga /start yuboring:
+   Avtomatik ulanadi! ✅
+
+═══════════════════════════════════════════════════════════════════
+QADAM 9: CUSTOM DOMAIN (Optional)
+═══════════════════════════════════════════════════════════════════
+
+1. Domain sotib oling (masalan: af-imperiya.uz)
+
+2. Render Settings → Custom Domain:
+   - af-imperiya.uz
+   - www.af-imperiya.uz
+
+3. DNS sozlamalari (domain provider):
+   Type: CNAME
+   Name: @
+   Value: af-imperiya.onrender.com
+
+4. SSL avtomatik (Let's Encrypt) ✅
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+1. "Application failed to start"
+   - Logs'ni tekshiring
+   - DATABASE_URL to'g'rimi?
+   - requirements.txt formatimi?
+
+2. "Module not found"
+   - requirements.txt'da barcha packages bormi?
+   - Redeploy qiling
+
+3. Database connection error
+   - DATABASE_URL to'g'ri copy qilinganmi?
+   - PostgreSQL Internal URL ishlatilganmi?
+
+4. 503 Service Unavailable
+   - Free plan 15 daqiqa uyquga ketadi
+   - Birinchi request 30-60 soniya kutib turing
+
+5. Static files yuklanmayapti
+   - Render avtomatik serve qiladi
+   - Cache'ni tozalang (Ctrl+Shift+R)
+
+═══════════════════════════════════════════════════════════════════
+MONITORING VA MAINTENANCE
+═══════════════════════════════════════════════════════════════════
+
+1. Logs ko'rish:
+   Render Dashboard → Logs → Live tail
+
+2. Metrics:
+   Dashboard → Metrics
+   - CPU usage
+   - Memory usage
+   - Request count
+
+3. Database backup:
+   PostgreSQL Dashboard → Backups
+   (Starter plan uchun)
+
+4. Auto-deploy:
+   Settings → Auto-Deploy: Yes
+   (Git push = automatic deploy)
+
+═══════════════════════════════════════════════════════════════════
+XARAJATLAR
+═══════════════════════════════════════════════════════════════════
+
+FREE PLAN:
+  - Web Service: $0/month (750 soatlik)
+  - PostgreSQL: $0/month (90 kun)
+  - 15 daqiqa uyqu
+  - Demo uchun yetarli
+
+STARTER PLAN (Production):
+  - Web Service: $7/month
+  - PostgreSQL: $7/month
+  - JAMI: $14/month
+  - 24/7 uptime
+  - 10GB database
+  - Auto-backups
+
+═══════════════════════════════════════════════════════════════════
+DEFAULT USERS (Birinchi deploy'dan keyin)
+═══════════════════════════════════════════════════════════════════
+
+1. admin / admin123
+   - Administrator
+   - Barcha huquqlar
+   - MAJBURIY parol o'zgartiring!
+
+2. rahbar / rahbar123
+   - Rahbar
+   - Ko'p huquqlar
+
+3. user / user123
+   - Test User
+   - Cheklangan
+
+4. demo / demo123
+   - Demo User
+   - Faqat ko'rish
+   - O'zgartirish mumkin emas
+
+═══════════════════════════════════════════════════════════════════
+XULOSA
+═══════════════════════════════════════════════════════════════════
+
+KERAKLI VAQT:
+  - GitHub push: 5 daqiqa
+  - Database setup: 3 daqiqa
+  - Web service: 5 daqiqa
+  - Environment vars: 3 daqiqa
+  - Deploy: 10 daqiqa
+  - Test: 2 daqiqa
+  - JAMI: 28 daqiqa
+
+NATIJA:
+  ✅ Live URL
+  ✅ HTTPS (SSL)
+  ✅ PostgreSQL database
+  ✅ Auto-deploy
+  ✅ 100% ishlaydi!
+
+KEYINGI QADAMLAR:
+  1. Parolni o'zgartiring
+  2. Yangi userlar yarating
+  3. Telegram bot sozlang
+  4. Modullarni test qiling
+  5. Production'ga foydalaning!
+
+═══════════════════════════════════════════════════════════════════
+
+🎉 DEPLOY MUVAFFAQIYATLI! OMAD! 🚀
+
+═══════════════════════════════════════════════════════════════════

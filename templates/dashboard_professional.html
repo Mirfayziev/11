@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% block page_title %}Rahbar Paneli{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.stat-card .number {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.stat-card .label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.section-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.vehicle-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.vehicle-card:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.vehicle-image {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.vehicle-info {
+    flex: 1;
+}
+
+.vehicle-name {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 5px;
+}
+
+.vehicle-details {
+    font-size: 12px;
+    color: #718096;
+}
+
+.fuel-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fuel-bar {
+    width: 100px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fuel-level {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.list-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+.list-item:hover {
+    background: #f8f9fa;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.contract-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.contract-amount {
+    font-size: 24px;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Rahbar Paneli</h2>
+            <p class="text-muted mb-0">{{ current_user.full_name }} - {{ format_date(today) }}</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-printer"></i> Chop etish
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Stats -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="icon">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div class="number">{{ stats.total_tasks }}</div>
+                <div class="label">Jami topshiriqlar</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="number">{{ stats.completed_tasks }}</div>
+                <div class="label">Bajarilgan topshiriqlar</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="number">{{ stats.overdue_tasks }}</div>
+                <div class="label">Muddati o'tgan</div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+                <div class="icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="number">{{ format_money(stats.total_amount) }}</div>
+                <div class="label">Umumiy pul aylanmasi</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-4 mb-4">
+            <!-- Yangi topshiriqlar -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="bi bi-calendar-event"></i> Yangi topshiriqlar
+                    </h5>
+                    <a href="{{ url_for('tasks') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                
+                {% for task in recent_tasks[:5] %}
+                <div class="list-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="flex-fill">
+                            <strong>{{ task.title }}</strong>
+                        </div>
+                        <span class="badge-status bg-{{ 'warning' if task.priority == 'high' else 'info' }}">
+                            {{ task.priority }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted" style="font-size: 12px;">
+                        <span>
+                            <i class="bi bi-person"></i> 
+                            {{ task.assigned_to.full_name if task.assigned_to else 'Tayinlanmagan' }}
+                        </span>
+                        <span>
+                            <i class="bi bi-calendar"></i>
+                            {{ format_date(task.deadline) if task.deadline else '-' }}
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-3">Topshiriqlar yo'q</p>
+                {% endfor %}
+            </div>
+
+            <!-- Shartnomalar -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="bi bi-file-text"></i> Faol shartnomalar
+                    </h5>
+                </div>
+                
+                {% for contract in contracts[:3] %}
+                <div class="contract-card">
+                    <div class="contract-amount">{{ format_money(contract.amount) }} UZS</div>
+                    <div style="opacity: 0.9; font-size: 14px;">{{ contract.contract_name }}</div>
+                    <div style="opacity: 0.8; font-size: 12px; margin-top: 5px;">
+                        {{ format_date(contract.start_date) }} - {{ format_date(contract.end_date) }}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-3">Shartnomalar yo'q</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Center Column -->
+        <div class="col-lg-4 mb-4">
+            <!-- Avto transportlar -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="bi bi-truck"></i> Avto transportlar
+                    </h5>
+                    <button class="btn btn-sm btn-primary" onclick="location.href='{{ url_for('vehicles') }}'">
+                        Barchasi
+                    </button>
+                </div>
+                
+                {% for vehicle in vehicles[:4] %}
+                <div class="vehicle-card">
+                    <div class="vehicle-image">
+                        {% if vehicle.photo_path %}
+                        <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path) }}" 
+                             alt="{{ vehicle.model }}" class="vehicle-image">
+                        {% else %}
+                        <div class="vehicle-image d-flex align-items-center justify-content-center">
+                            <i class="bi bi-truck" style="font-size: 32px; color: white;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="vehicle-info">
+                        <div class="vehicle-name">{{ vehicle.model }}</div>
+                        <div class="vehicle-details">{{ vehicle.number_plate }}</div>
+                        <div class="fuel-indicator mt-2">
+                            <span style="font-size: 11px;">{{ vehicle.mileage|default(0) }} km</span>
+                            <div class="fuel-bar">
+                                <div class="fuel-level bg-success" style="width: {{ (vehicle.mileage|default(0) % 100) }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-3">Transportlar yo'q</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-4 mb-4">
+            <!-- Xodimlar va statistika -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="bi bi-graph-up"></i> Xodimlar statistikasi
+                    </h5>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="employeeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Autsorsing xizmatlari -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h5 class="section-title">
+                        <i class="bi bi-people"></i> Autsorsing xizmatlari
+                    </h5>
+                </div>
+                
+                {% for service in outsourcing[:3] %}
+                <div class="list-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ service.service_name }}</div>
+                            <div class="text-muted" style="font-size: 12px;">
+                                {{ service.company_name }}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold text-primary">{{ format_money(service.amount) }}</div>
+                            <span class="badge bg-success">Faol</span>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-muted py-3">Xizmatlar yo'q</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Employee Chart
+const ctx = document.getElementById('employeeChart');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Admin', 'Rahbar', 'Xodim'],
+        datasets: [{
+            data: [{{ employee_stats.admin }}, {{ employee_stats.rahbar }}, {{ employee_stats.xodim }}],
+            backgroundColor: [
+                '#667eea',
+                '#4facfe',
+                '#fa709a'
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Auto refresh every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
+{% endblock %}
